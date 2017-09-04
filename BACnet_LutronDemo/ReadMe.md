@@ -31,4 +31,5 @@ public enum LutronObjectType : uint
     Lighting_State = 3
 }
 ```
+### Reference document
 http://www.lutron.com/TechnicalDocumentLibrary/369998.pdf
