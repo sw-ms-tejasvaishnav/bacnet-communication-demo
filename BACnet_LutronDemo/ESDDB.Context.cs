@@ -26,5 +26,6 @@ namespace BACnet_LutronDemo
         }
     
         public virtual DbSet<BACnetDevice> BACnetDevices { get; set; }
+        public virtual DbSet<BACnetDeviceMapping> BACnetDeviceMappings { get; set; }
     }
 }

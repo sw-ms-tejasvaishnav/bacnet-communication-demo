@@ -23,14 +23,14 @@ namespace BACnet_LutronDemo
         static void Main()
         {
             StartBACnetServerActivity();
-            Thread.Sleep(1000); // Wait a fiew time for WhoIs responses (managed in handler_OnIam)
+            Thread.Sleep(1000); //// Wait a fiew time for WhoIs responses (managed in handler_OnIam)
             InsertBACnetDeviceDetailInDB();
 
             moBacnetClient.Dispose();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LutronLight());
+            Application.Run(new LutronLightFloor());
 
             
         }
@@ -41,14 +41,14 @@ namespace BACnet_LutronDemo
         /// </summary>
         static void StartBACnetServerActivity()
         {
-            // Bacnet on UDP/IP/Ethernet
+            //// Bacnet on UDP/IP/Ethernet
             moBacnetClient = new BacnetClient(new BacnetIpUdpProtocolTransport(0xBAC0, false));
-            // or Bacnet Mstp on COM4 à 38400 bps, own master id 8
-            // m_bacnet_client = new BacnetClient(new BacnetMstpProtocolTransport("COM4", 38400, 8);
+            //// or Bacnet Mstp on COM4 à 38400 bps, own master id 8
+            //// m_bacnet_client = new BacnetClient(new BacnetMstpProtocolTransport("COM4", 38400, 8);
 
             moBacnetClient.Start();  // go
 
-            // Send WhoIs in order to get back all the Iam responses :  
+            //// Send WhoIs in order to get back all the Iam responses :  
             moBacnetClient.OnIam += new BacnetClient.IamHandler(handler_OnIam);
             moBacnetClient.WhoIs();
         }
@@ -90,15 +90,17 @@ namespace BACnet_LutronDemo
         /// </summary>
         static void InsertBACnetDeviceDetailInDB()
         {
-            if (loBACnetDeviceModel != null)
+            if (loBACnetDeviceModel != null && loBACnetDeviceModel.loBACnetDeviceList.Count > 0)
             {
                 using (var loESDLutronEntities = new ESDLutronEntities())
                 {
                     //// Declare list to instert device in DB
                     List<BACnetDevice> loInsertBACnetDeviceList = new List<BACnetDevice>();
+                    List<BACnetDeviceMapping> loInsertBACnetDeviceMapping = new List<BACnetDeviceMapping>();
 
                     //// Remove all exists device on each application run
                     loESDLutronEntities.BACnetDevices.RemoveRange(loESDLutronEntities.BACnetDevices.AsEnumerable());
+                    loESDLutronEntities.BACnetDeviceMappings.RemoveRange(loESDLutronEntities.BACnetDeviceMappings.AsEnumerable());
 
                     foreach (var loBacnetDevice in loBACnetDeviceModel.loBACnetDeviceList)
                     {
@@ -130,6 +132,31 @@ namespace BACnet_LutronDemo
                                 routed_net = loBacnetDevice.loBACnetAddress.RoutedSource.net
                             });
 
+                            int? liSuiteID = null, liRoomID = null;
+
+                            if(((BacnetObjectId)loObjectValue.Value).type.ToString().ToUpper() == "OBJECT_ANALOG_VALUE")
+                            {
+                                if(Convert.ToInt32(((BacnetObjectId)loObjectValue.Value).Instance.ToString()) < 4)
+                                {
+                                    liSuiteID = 1;
+                                }
+                                else
+                                {
+                                    liSuiteID = 2;
+                                }
+
+                                liRoomID = Convert.ToInt32(((BacnetObjectId)loObjectValue.Value).Instance.ToString());
+                            }
+
+                            loInsertBACnetDeviceMapping.Add(
+                            new BACnetDeviceMapping
+                            {
+                                device_id = Convert.ToInt32(loBacnetDevice.inDeviceID),
+                                object_instance = Convert.ToInt32(((BacnetObjectId)loObjectValue.Value).Instance.ToString()),
+                                floor_id = Convert.ToInt32(loBacnetDevice.inDeviceID),
+                                suite_id = liSuiteID,
+                                room_id = liRoomID,
+                            });
                         }
                     }
 
@@ -137,6 +164,7 @@ namespace BACnet_LutronDemo
                     if (loInsertBACnetDeviceList != null && loInsertBACnetDeviceList.Count > 0)
                     {
                         loESDLutronEntities.BACnetDevices.AddRange(loInsertBACnetDeviceList);
+                        loESDLutronEntities.BACnetDeviceMappings.AddRange(loInsertBACnetDeviceMapping);
                         loESDLutronEntities.SaveChanges();
                     }
                 }

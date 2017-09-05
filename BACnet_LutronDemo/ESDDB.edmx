@@ -5,6 +5,17 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="ESDLutronModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="BACnetDeviceMapping">
+          <Key>
+            <PropertyRef Name="bacnet_device_mapping_id" />
+          </Key>
+          <Property Name="bacnet_device_mapping_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="device_id" Type="int" />
+          <Property Name="object_instance" Type="int" />
+          <Property Name="floor_id" Type="int" />
+          <Property Name="room_id" Type="int" />
+          <Property Name="suite_id" Type="int" />
+        </EntityType>
         <EntityType Name="BACnetDevices">
           <Key>
             <PropertyRef Name="bacnet_device_id" />
@@ -19,6 +30,7 @@
           <Property Name="routed_net" Type="int" />
         </EntityType>
         <EntityContainer Name="ESDLutronModelStoreContainer">
+          <EntitySet Name="BACnetDeviceMapping" EntityType="Self.BACnetDeviceMapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BACnetDevices" EntityType="Self.BACnetDevices" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -27,6 +39,7 @@
       <Schema Namespace="ESDLutronModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="ESDLutronEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="BACnetDevices" EntityType="ESDLutronModel.BACnetDevice" />
+          <EntitySet Name="BACnetDeviceMappings" EntityType="ESDLutronModel.BACnetDeviceMapping" />
         </EntityContainer>
         <EntityType Name="BACnetDevice">
           <Key>
@@ -40,6 +53,17 @@
           <Property Name="object_name" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="routed_source" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="routed_net" Type="Int32" />
+        </EntityType>
+        <EntityType Name="BACnetDeviceMapping">
+          <Key>
+            <PropertyRef Name="bacnet_device_mapping_id" />
+          </Key>
+          <Property Name="bacnet_device_mapping_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="device_id" Type="Int32" />
+          <Property Name="object_instance" Type="Int32" />
+          <Property Name="floor_id" Type="Int32" />
+          <Property Name="room_id" Type="Int32" />
+          <Property Name="suite_id" Type="Int32" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -58,6 +82,18 @@
                 <ScalarProperty Name="device_id" ColumnName="device_id" />
                 <ScalarProperty Name="network_id" ColumnName="network_id" />
                 <ScalarProperty Name="bacnet_device_id" ColumnName="bacnet_device_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BACnetDeviceMappings">
+            <EntityTypeMapping TypeName="ESDLutronModel.BACnetDeviceMapping">
+              <MappingFragment StoreEntitySet="BACnetDeviceMapping">
+                <ScalarProperty Name="suite_id" ColumnName="suite_id" />
+                <ScalarProperty Name="room_id" ColumnName="room_id" />
+                <ScalarProperty Name="floor_id" ColumnName="floor_id" />
+                <ScalarProperty Name="object_instance" ColumnName="object_instance" />
+                <ScalarProperty Name="device_id" ColumnName="device_id" />
+                <ScalarProperty Name="bacnet_device_mapping_id" ColumnName="bacnet_device_mapping_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

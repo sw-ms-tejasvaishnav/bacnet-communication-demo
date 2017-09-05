@@ -31,7 +31,7 @@ namespace BACnet_LutronDemo
             chkLightOnOff.TextAlign = ContentAlignment.MiddleCenter;
             chkLightOnOff.MinimumSize = new Size(75, 25); //To prevent shrinkage!
 
-            // Bacnet on UDP/IP/Ethernet
+            //// Bacnet on UDP/IP/Ethernet
             moBacnetClient = new BacnetClient(new BacnetIpUdpProtocolTransport(47808, false));// (0xBAC0, false));
             moBacnetClient.Start();    // go
 
@@ -94,8 +94,8 @@ namespace BACnet_LutronDemo
                     moBacnetClient.ReadPropertyRequest(loBacnetAddress, new BacnetObjectId(BacnetObjectTypes.OBJECT_BINARY_VALUE, (uint)loBACnetDeviceDetail.object_instance), BacnetPropertyIds.PROP_PRESENT_VALUE, out loBacnetValueList);
 
 
-                    BacnetValue newValue = new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_ENUMERATED, fbToggleStatus == true ? 1 : 0);
-                    BacnetValue[] loWriteValue = { newValue };
+                    BacnetValue loBacnetNewValue = new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_ENUMERATED, fbToggleStatus == true ? 1 : 0);
+                    BacnetValue[] loWriteValue = { loBacnetNewValue };
 
                     moBacnetClient.WritePropertyRequest(loBacnetAddress, new BacnetObjectId(BacnetObjectTypes.OBJECT_BINARY_VALUE, (uint)loBACnetDeviceDetail.object_instance), BacnetPropertyIds.PROP_PRESENT_VALUE, loWriteValue);
 
@@ -234,7 +234,7 @@ namespace BACnet_LutronDemo
                         COVChangesToUI(value.value[0].ToString());
                         break;
                     default:
-                        //got something else? ignore it
+                        ////got something else? ignore it
                         break;
                 }
             }
@@ -247,9 +247,9 @@ namespace BACnet_LutronDemo
         /// <param name="fsCOVPresentValue"></param>
         private void COVChangesToUI(string fsCOVPresentValue)
         {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
+            //// InvokeRequired required compares the thread ID of the
+            //// calling thread to the thread ID of the creating thread.
+            //// If these threads are different, it returns true.
             if (this.lblCurrentLightLevelValue.InvokeRequired)
             {
                 SetTextCallback loSetTextCallback = new SetTextCallback(COVChangesToUI);
@@ -283,12 +283,12 @@ namespace BACnet_LutronDemo
 
                 BacnetAddress adr;
 
-                // Looking for the device
+                //// Looking for the device
                 adr = new BacnetAddress(BacnetAddressTypes.IP, loBACnetDeviceDetail.network_id);
                 if (adr == null) return false;  // not found
                 adr.RoutedSource = new BacnetAddress(BacnetAddressTypes.IP, loBACnetDeviceDetail.routed_source, (ushort)loBACnetDeviceDetail.routed_net);
 
-                // Property Write
+                //// Property Write
 
 
                 IList<BacnetValue> NoScalarValue;
@@ -301,8 +301,8 @@ namespace BACnet_LutronDemo
                 //List<BacnetValue> loWriteValue = new List<BacnetValue>();
                 //loWriteValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_REAL, 5));
 
-                BacnetValue newValue = new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_REAL, Convert.ToSingle(foBacnetValue.Value));
-                BacnetValue[] loWriteValue = { newValue };
+                BacnetValue loBacnetNewValue = new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_REAL, Convert.ToSingle(foBacnetValue.Value));
+                BacnetValue[] loWriteValue = { loBacnetNewValue };
 
                 moBacnetClient.WritePropertyRequest(adr, foBacnetObjectId, foBacnetPropertyIds, loWriteValue);
 

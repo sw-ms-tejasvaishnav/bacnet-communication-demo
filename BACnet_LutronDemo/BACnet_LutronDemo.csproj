@@ -66,6 +66,9 @@
     <Compile Include="BACnetDevice.cs">
       <DependentUpon>ESDDB.tt</DependentUpon>
     </Compile>
+    <Compile Include="BACnetDeviceMapping.cs">
+      <DependentUpon>ESDDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Common\CommonConstant.cs" />
     <Compile Include="ESDDB.Context.cs">
       <AutoGen>True</AutoGen>
@@ -93,11 +96,20 @@
     <Compile Include="LutronLight.Designer.cs">
       <DependentUpon>LutronLight.cs</DependentUpon>
     </Compile>
+    <Compile Include="LutronLightFloor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LutronLightFloor.Designer.cs">
+      <DependentUpon>LutronLightFloor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Model\BACnetDevice.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="LutronLight.resx">
       <DependentUpon>LutronLight.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LutronLightFloor.resx">
+      <DependentUpon>LutronLightFloor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
