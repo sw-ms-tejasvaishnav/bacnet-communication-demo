@@ -19,6 +19,8 @@ namespace BACnet_LutronDemo.Common
             public static string Lighting_Level = "OBJECT_ANALOG_VALUE";
             public static string Lighting_State = "OBJECT_BINARY_VALUE";
             public static string Device = "OBJECT_DEVICE";
+            public static string NOTIFICATION_CLASS = "OBJECT_NOTIFICATION_CLASS";
+            public static string ALERT_ENROLLMENT = "OBJECT_ALERT_ENROLLMENT";
         }
 
         public enum BuildingFloor : int

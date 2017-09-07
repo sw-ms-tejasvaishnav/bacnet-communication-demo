@@ -20,20 +20,34 @@ namespace BACnet_LutronDemo
         private const float ldMinLightnessCoef = 1f;
         private const float ldMaxLightnessCoef = 0.80f;
 
+        delegate void SetAlarmEventCallback(string fsDeviceID, string fsInstance, string fsEventState);
+
         #region init
 
+        /// <summary>
+        /// InIt bacnet and UI
+        /// </summary>
         public LutronLightFloor()
         {
             InitializeComponent();
 
             //// Bacnet on UDP/IP/Ethernet
             moBacnetClient = new BacnetClient(new BacnetIpUdpProtocolTransport(47808, false));// (0xBAC0, false));
+
+            //// Below 2 are needed for alarm event
+            moBacnetClient.OnEventNotify += new BacnetClient.EventNotificationCallbackHandler(handler_OnEventNotify);
+            moBacnetClient.OnWhoIs += new BacnetClient.WhoIsHandler(handler_OnWhoIs);
+
             moBacnetClient.Start();    // go
+            moBacnetClient.WhoIs();    // go
 
             FillDropDown();
             
         }
 
+        /// <summary>
+        /// Fill static floor dropdown
+        /// </summary>
         public void FillDropDown()
         {
             ddlFloor.Items.Clear();
@@ -50,8 +64,65 @@ namespace BACnet_LutronDemo
         #endregion
 
 
+        #region BACnet handler
+
+        /// <summary>
+        /// handler to assign alarm enrolment instance on event notification
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="adr"></param>
+        /// <param name="low_limit"></param>
+        /// <param name="high_limit"></param>
+        static void handler_OnWhoIs(BacnetClient sender, BacnetAddress adr, int low_limit, int high_limit)
+        {
+            if (low_limit != -1 && 1 < low_limit)
+                return;
+            else if (high_limit != -1 && 1 > high_limit)
+                return;
+
+            using (var loESDLutronEntities = new ESDLutronEntities())
+            {
+                Int32? liAlarmEnrolment = loESDLutronEntities.BACnetDevices
+                                          .Where(x => x.device_id == 1
+                                                && x.object_type.ToUpper() == LutronFloorObjectType.ALERT_ENROLLMENT)
+                                           .Select(x => x.object_instance).FirstOrDefault();
+
+                if(liAlarmEnrolment != null)
+                {
+                    sender.Iam((uint)liAlarmEnrolment, new BacnetSegmentations());
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// alarm event handler to perform task basis on event state changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="adr"></param>
+        /// <param name="EventData"></param>
+        public void handler_OnEventNotify(BacnetClient sender, BacnetAddress adr, BacnetEventNotificationData EventData)
+        {
+            string val = adr.ToString() + ":" + EventData.initiatingObjectIdentifier.type + ":" + EventData.initiatingObjectIdentifier.instance + ":" + EventData.eventObjectIdentifier.type + ":" + EventData.eventObjectIdentifier.instance;
+            Console.WriteLine(val + " " + EventData.fromState + " to " + EventData.toState + " " + EventData.notifyType.ToString());
+
+            string lsDeviceDetail = EventData.initiatingObjectIdentifier.type + ":" + EventData.initiatingObjectIdentifier.instance;
+            string lsInstanceDetail = EventData.eventObjectIdentifier.type + ":" + EventData.eventObjectIdentifier.instance;
+            string lsEventState = EventData.fromState + " to " + EventData.toState;
+
+            AlarmEventChangesToUI(lsDeviceDetail, lsInstanceDetail, lsEventState);
+        }
+        #endregion
+
+
+
         #region Light toggle light 1/light 2
 
+        /// <summary>
+        /// Get light state (BV) on Light 1 tadio button select/unselect
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rbLight1_CheckedChanged(object sender, EventArgs e)
         {
             if(rbLight1.Checked)
@@ -69,6 +140,12 @@ namespace BACnet_LutronDemo
             }
         }
 
+        
+        /// <summary> 
+        /// Get light state (BV) on Light 2 tadio button select/unselect (light state)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rbLight2_CheckedChanged(object sender, EventArgs e)
         {
             if (rbLight2.Checked)
@@ -86,6 +163,12 @@ namespace BACnet_LutronDemo
             }
         }
       
+        
+        /// <summary>
+        /// toggle BV for device 1, device 2 (light state)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSwitch_Click(object sender, EventArgs e)
         {
             if(rbLight1.Checked || rbLight2.Checked)
@@ -132,6 +215,12 @@ namespace BACnet_LutronDemo
             }
         }
 
+
+        /// <summary>
+        /// Get current light state for device
+        /// </summary>
+        /// <param name="fiDeviceID"></param>
+        /// <returns></returns>
         private bool GetLutronLightState(Int32 fiDeviceID)
         {
             IList<BacnetValue> loBacnetValueList;
@@ -160,6 +249,12 @@ namespace BACnet_LutronDemo
             }
         }
 
+
+        /// <summary>
+        /// toggle BV (light state)
+        /// </summary>
+        /// <param name="fiDeviceID"></param>
+        /// <param name="fbToggleStatus"></param>
         private void ToggleLutronLight(int fiDeviceID, bool fbToggleStatus)
         {
             using (var loESDLutronEntities = new ESDLutronEntities())
@@ -189,9 +284,13 @@ namespace BACnet_LutronDemo
 
 
 
-
         #region Light sense Floor 1/Floor 2
 
+        /// <summary>
+        /// Change light level for floor (AV) at UI level only
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void trbkLightSense_Scroll(object sender, EventArgs e)
         {
             lblSensPer.Text = trbkLightSense.Value.ToString();
@@ -206,6 +305,11 @@ namespace BACnet_LutronDemo
             }
         }
 
+        /// <summary>
+        ///  Change light level for floor (AV) at device level
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void trbkLightSense_MouseUp(object sender, MouseEventArgs e)
         {
             if(ddlFloor.SelectedValue != null)
@@ -219,6 +323,10 @@ namespace BACnet_LutronDemo
 
         }
 
+        /// <summary>
+        ///  Change light level for floor (AV)
+        /// </summary>
+        /// <param name="fiFloorID"></param>
         private void ChangeLutronLightLevel(Int32 fiFloorID)
         {
             using (var loESDLutronEntities = new ESDLutronEntities())
@@ -233,6 +341,7 @@ namespace BACnet_LutronDemo
                                             join D in loESDLutronEntities.BACnetDevices on DM.device_id equals D.device_id
                                             where DM.floor_id == fiFloorID
                                             && D.object_type.ToUpper() == LutronFloorObjectType.Lighting_Level
+                                            && D.object_instance != 7 //// 7 is for alarm event
                                             select new
                                             {
                                                 network_id = D.network_id,
@@ -260,6 +369,11 @@ namespace BACnet_LutronDemo
             }
         }
 
+        /// <summary>
+        /// get current light level for floor
+        /// </summary>
+        /// <param name="fiFloorID"></param>
+        /// <returns></returns>
         private string GetLutronLightLevel(Int32 fiFloorID)
         {
             IList<BacnetValue> loBacnetValueList;
@@ -297,6 +411,12 @@ namespace BACnet_LutronDemo
             }
         }
 
+        /// <summary>
+        /// change color pattern as per light level scrolled
+        /// </summary>
+        /// <param name="foColor"></param>
+        /// <param name="fiLightness"></param>
+        /// <returns></returns>
         private static Color SetLightness(Color foColor, int fiLightness)
         {
             if (fiLightness < liMinLightness)
@@ -314,6 +434,10 @@ namespace BACnet_LutronDemo
                 (int)(foColor.B * ldCOEF));
         }
 
+        /// <summary>
+        /// Change light brightness for floor 1 as per light level selected (UI Level)
+        /// </summary>
+        /// <param name="fiLightness"></param>
         private void ChangeLightBrightnessForFirstFloor(int fiLightness)
         {
             Color loColor = SetLightness(Color.Yellow, fiLightness);
@@ -325,6 +449,10 @@ namespace BACnet_LutronDemo
             lbl6.BackColor = loColor;
         }
 
+        /// <summary>
+        /// Change light brightness for floor 2 as per light level selected (UI Level)
+        /// </summary>
+        /// <param name="fiLightness"></param>
         private void ChangeLightBrightnessForSecondFloor(int fiLightness)
         {
             Color loColor = SetLightness(Color.Yellow, fiLightness);
@@ -335,8 +463,16 @@ namespace BACnet_LutronDemo
             lbl25.BackColor = loColor;
             lbl26.BackColor = loColor;
         }
+
         #endregion
 
+
+
+        /// <summary>
+        /// Get light level for trackbar as per floor selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ddlFloor_SelectedIndexChanged(object sender, EventArgs e)
         {
             string lsPresentValue = "0";
@@ -372,6 +508,31 @@ namespace BACnet_LutronDemo
             else
             {
                 ChangeLightBrightnessForSecondFloor(Convert.ToInt32(lsPresentValue));
+            }
+        }
+
+
+        /// <summary>
+        /// Delegate handler for alarm notification to UI
+        /// </summary>
+        /// <param name="fsDeviceID"></param>
+        /// <param name="fsInstance"></param>
+        /// <param name="fsEventState"></param>
+        public void AlarmEventChangesToUI(string fsDeviceID, string fsInstance, string fsEventState)
+        {
+            //// InvokeRequired required compares the thread ID of the
+            //// calling thread to the thread ID of the creating thread.
+            //// If these threads are different, it returns true.
+            if (this.lblAlarmDevice.InvokeRequired)
+            {
+                SetAlarmEventCallback loSetTextCallback = new SetAlarmEventCallback(AlarmEventChangesToUI);
+                this.Invoke(loSetTextCallback, new object[] { fsDeviceID, fsInstance, fsEventState });
+            }
+            else
+            {
+                this.lblAlarmDevice.Text = fsDeviceID;
+                this.lblAlarmInstance.Text = fsInstance;
+                this.lblAlarmEventState.Text = fsEventState;
             }
         }
     }

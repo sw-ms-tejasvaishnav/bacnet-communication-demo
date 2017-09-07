@@ -55,11 +55,19 @@
             this.lbl3 = new System.Windows.Forms.Label();
             this.lbl2 = new System.Windows.Forms.Label();
             this.lbl1 = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.lblAlarmEventState = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lblAlarmInstance = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.lblAlarmDevice = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trbkLightSense)).BeginInit();
             this.panel1.SuspendLayout();
             this.pnlFirstFloor.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel3
@@ -333,11 +341,80 @@
             this.lbl1.TabIndex = 0;
             this.lbl1.Text = "1";
             // 
+            // panel4
+            // 
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel4.Controls.Add(this.lblAlarmEventState);
+            this.panel4.Controls.Add(this.label4);
+            this.panel4.Controls.Add(this.lblAlarmInstance);
+            this.panel4.Controls.Add(this.label3);
+            this.panel4.Controls.Add(this.lblAlarmDevice);
+            this.panel4.Controls.Add(this.label2);
+            this.panel4.Location = new System.Drawing.Point(25, 301);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(386, 123);
+            this.panel4.TabIndex = 25;
+            // 
+            // lblAlarmEventState
+            // 
+            this.lblAlarmEventState.AutoSize = true;
+            this.lblAlarmEventState.Location = new System.Drawing.Point(87, 92);
+            this.lblAlarmEventState.Name = "lblAlarmEventState";
+            this.lblAlarmEventState.Size = new System.Drawing.Size(10, 13);
+            this.lblAlarmEventState.TabIndex = 5;
+            this.lblAlarmEventState.Text = "-";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(17, 92);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(64, 13);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Event state:";
+            // 
+            // lblAlarmInstance
+            // 
+            this.lblAlarmInstance.AutoSize = true;
+            this.lblAlarmInstance.Location = new System.Drawing.Point(74, 51);
+            this.lblAlarmInstance.Name = "lblAlarmInstance";
+            this.lblAlarmInstance.Size = new System.Drawing.Size(10, 13);
+            this.lblAlarmInstance.TabIndex = 3;
+            this.lblAlarmInstance.Text = "-";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(17, 51);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(51, 13);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Instance:";
+            // 
+            // lblAlarmDevice
+            // 
+            this.lblAlarmDevice.AutoSize = true;
+            this.lblAlarmDevice.Location = new System.Drawing.Point(67, 17);
+            this.lblAlarmDevice.Name = "lblAlarmDevice";
+            this.lblAlarmDevice.Size = new System.Drawing.Size(10, 13);
+            this.lblAlarmDevice.TabIndex = 1;
+            this.lblAlarmDevice.Text = "-";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(17, 17);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(44, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Device:";
+            // 
             // LutronLightFloor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(439, 294);
+            this.ClientSize = new System.Drawing.Size(439, 453);
+            this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.lblLight1);
@@ -355,6 +432,8 @@
             this.panel1.PerformLayout();
             this.pnlFirstFloor.ResumeLayout(false);
             this.pnlFirstFloor.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -388,5 +467,12 @@
         private System.Windows.Forms.Label lbl3;
         private System.Windows.Forms.Label lbl2;
         private System.Windows.Forms.Label lbl1;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label lblAlarmDevice;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblAlarmInstance;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblAlarmEventState;
     }
 }
