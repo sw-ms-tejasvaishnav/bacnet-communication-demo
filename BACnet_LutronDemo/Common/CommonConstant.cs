@@ -21,6 +21,7 @@ namespace BACnet_LutronDemo.Common
             public static string Device = "OBJECT_DEVICE";
             public static string NOTIFICATION_CLASS = "OBJECT_NOTIFICATION_CLASS";
             public static string ALERT_ENROLLMENT = "OBJECT_ALERT_ENROLLMENT";
+            public static string SCHEDULE = "OBJECT_SCHEDULE";
         }
 
         public enum BuildingFloor : int

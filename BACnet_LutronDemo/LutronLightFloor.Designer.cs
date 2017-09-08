@@ -62,12 +62,23 @@
             this.label3 = new System.Windows.Forms.Label();
             this.lblAlarmDevice = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.ddlScheduleDay = new System.Windows.Forms.ComboBox();
+            this.txtScheduleHours = new System.Windows.Forms.TextBox();
+            this.txtScheduleMinutes = new System.Windows.Forms.TextBox();
+            this.txtScheduleSeconds = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btnSchedule = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.ddlScheduleDevice = new System.Windows.Forms.ComboBox();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trbkLightSense)).BeginInit();
             this.panel1.SuspendLayout();
             this.pnlFirstFloor.SuspendLayout();
             this.panel4.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel3
@@ -409,11 +420,110 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Device:";
             // 
+            // panel5
+            // 
+            this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel5.Controls.Add(this.label7);
+            this.panel5.Controls.Add(this.ddlScheduleDevice);
+            this.panel5.Controls.Add(this.btnSchedule);
+            this.panel5.Controls.Add(this.label6);
+            this.panel5.Controls.Add(this.txtScheduleSeconds);
+            this.panel5.Controls.Add(this.txtScheduleMinutes);
+            this.panel5.Controls.Add(this.txtScheduleHours);
+            this.panel5.Controls.Add(this.label5);
+            this.panel5.Controls.Add(this.ddlScheduleDay);
+            this.panel5.Location = new System.Drawing.Point(25, 457);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(386, 186);
+            this.panel5.TabIndex = 26;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(14, 18);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(57, 13);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "Select day";
+            // 
+            // ddlScheduleDay
+            // 
+            this.ddlScheduleDay.FormattingEnabled = true;
+            this.ddlScheduleDay.Items.AddRange(new object[] {
+            "Monday,1",
+            "Tuesday,2"});
+            this.ddlScheduleDay.Location = new System.Drawing.Point(77, 15);
+            this.ddlScheduleDay.Name = "ddlScheduleDay";
+            this.ddlScheduleDay.Size = new System.Drawing.Size(121, 21);
+            this.ddlScheduleDay.TabIndex = 0;
+            // 
+            // txtScheduleHours
+            // 
+            this.txtScheduleHours.Location = new System.Drawing.Point(77, 51);
+            this.txtScheduleHours.Name = "txtScheduleHours";
+            this.txtScheduleHours.Size = new System.Drawing.Size(48, 20);
+            this.txtScheduleHours.TabIndex = 2;
+            // 
+            // txtScheduleMinutes
+            // 
+            this.txtScheduleMinutes.Location = new System.Drawing.Point(137, 51);
+            this.txtScheduleMinutes.Name = "txtScheduleMinutes";
+            this.txtScheduleMinutes.Size = new System.Drawing.Size(48, 20);
+            this.txtScheduleMinutes.TabIndex = 3;
+            // 
+            // txtScheduleSeconds
+            // 
+            this.txtScheduleSeconds.Location = new System.Drawing.Point(199, 51);
+            this.txtScheduleSeconds.Name = "txtScheduleSeconds";
+            this.txtScheduleSeconds.Size = new System.Drawing.Size(48, 20);
+            this.txtScheduleSeconds.TabIndex = 4;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(14, 54);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(30, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Time";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
+            // 
+            // btnSchedule
+            // 
+            this.btnSchedule.Location = new System.Drawing.Point(77, 151);
+            this.btnSchedule.Name = "btnSchedule";
+            this.btnSchedule.Size = new System.Drawing.Size(75, 23);
+            this.btnSchedule.TabIndex = 6;
+            this.btnSchedule.Text = "Schedule";
+            this.btnSchedule.UseVisualStyleBackColor = true;
+            this.btnSchedule.Click += new System.EventHandler(this.btnSchedule_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(14, 89);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(41, 13);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "Device";
+            // 
+            // ddlScheduleDevice
+            // 
+            this.ddlScheduleDevice.FormattingEnabled = true;
+            this.ddlScheduleDevice.Items.AddRange(new object[] {
+            "Monday,1",
+            "Tuesday,2"});
+            this.ddlScheduleDevice.Location = new System.Drawing.Point(77, 86);
+            this.ddlScheduleDevice.Name = "ddlScheduleDevice";
+            this.ddlScheduleDevice.Size = new System.Drawing.Size(121, 21);
+            this.ddlScheduleDevice.TabIndex = 7;
+            // 
             // LutronLightFloor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(439, 453);
+            this.ClientSize = new System.Drawing.Size(439, 655);
+            this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
@@ -434,6 +544,8 @@
             this.pnlFirstFloor.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -474,5 +586,15 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblAlarmEventState;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox ddlScheduleDay;
+        private System.Windows.Forms.TextBox txtScheduleHours;
+        private System.Windows.Forms.TextBox txtScheduleMinutes;
+        private System.Windows.Forms.TextBox txtScheduleSeconds;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnSchedule;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox ddlScheduleDevice;
     }
 }
