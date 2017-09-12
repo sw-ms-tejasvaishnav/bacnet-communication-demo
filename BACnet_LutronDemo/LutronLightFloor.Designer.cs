@@ -63,15 +63,19 @@
             this.lblAlarmDevice = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.ddlScheduleDay = new System.Windows.Forms.ComboBox();
-            this.txtScheduleHours = new System.Windows.Forms.TextBox();
-            this.txtScheduleMinutes = new System.Windows.Forms.TextBox();
-            this.txtScheduleSeconds = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.btnSchedule = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtScheduleValue = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.ddlScheduleObject = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.ddlScheduleDevice = new System.Windows.Forms.ComboBox();
+            this.btnSchedule = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtScheduleSeconds = new System.Windows.Forms.TextBox();
+            this.txtScheduleMinutes = new System.Windows.Forms.TextBox();
+            this.txtScheduleHours = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.ddlScheduleDay = new System.Windows.Forms.ComboBox();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trbkLightSense)).BeginInit();
@@ -423,6 +427,10 @@
             // panel5
             // 
             this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel5.Controls.Add(this.label9);
+            this.panel5.Controls.Add(this.txtScheduleValue);
+            this.panel5.Controls.Add(this.label8);
+            this.panel5.Controls.Add(this.ddlScheduleObject);
             this.panel5.Controls.Add(this.label7);
             this.panel5.Controls.Add(this.ddlScheduleDevice);
             this.panel5.Controls.Add(this.btnSchedule);
@@ -434,8 +442,109 @@
             this.panel5.Controls.Add(this.ddlScheduleDay);
             this.panel5.Location = new System.Drawing.Point(25, 457);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(386, 186);
+            this.panel5.Size = new System.Drawing.Size(386, 231);
             this.panel5.TabIndex = 26;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(4, 159);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(72, 13);
+            this.label9.TabIndex = 12;
+            this.label9.Text = "Present value";
+            // 
+            // txtScheduleValue
+            // 
+            this.txtScheduleValue.Location = new System.Drawing.Point(77, 156);
+            this.txtScheduleValue.Name = "txtScheduleValue";
+            this.txtScheduleValue.Size = new System.Drawing.Size(48, 20);
+            this.txtScheduleValue.TabIndex = 11;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(15, 125);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(38, 13);
+            this.label8.TabIndex = 10;
+            this.label8.Text = "Object";
+            // 
+            // ddlScheduleObject
+            // 
+            this.ddlScheduleObject.FormattingEnabled = true;
+            this.ddlScheduleObject.Items.AddRange(new object[] {
+            "Monday,1",
+            "Tuesday,2"});
+            this.ddlScheduleObject.Location = new System.Drawing.Point(78, 122);
+            this.ddlScheduleObject.Name = "ddlScheduleObject";
+            this.ddlScheduleObject.Size = new System.Drawing.Size(287, 21);
+            this.ddlScheduleObject.TabIndex = 9;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(14, 89);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(41, 13);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "Device";
+            // 
+            // ddlScheduleDevice
+            // 
+            this.ddlScheduleDevice.FormattingEnabled = true;
+            this.ddlScheduleDevice.Items.AddRange(new object[] {
+            "Monday,1",
+            "Tuesday,2"});
+            this.ddlScheduleDevice.Location = new System.Drawing.Point(77, 86);
+            this.ddlScheduleDevice.Name = "ddlScheduleDevice";
+            this.ddlScheduleDevice.Size = new System.Drawing.Size(121, 21);
+            this.ddlScheduleDevice.TabIndex = 7;
+            this.ddlScheduleDevice.SelectedIndexChanged += new System.EventHandler(this.ddlScheduleDevice_SelectedIndexChanged);
+            // 
+            // btnSchedule
+            // 
+            this.btnSchedule.Location = new System.Drawing.Point(77, 190);
+            this.btnSchedule.Name = "btnSchedule";
+            this.btnSchedule.Size = new System.Drawing.Size(75, 23);
+            this.btnSchedule.TabIndex = 6;
+            this.btnSchedule.Text = "Schedule";
+            this.btnSchedule.UseVisualStyleBackColor = true;
+            this.btnSchedule.Click += new System.EventHandler(this.btnSchedule_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(14, 54);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(30, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Time";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
+            // 
+            // txtScheduleSeconds
+            // 
+            this.txtScheduleSeconds.Location = new System.Drawing.Point(199, 51);
+            this.txtScheduleSeconds.Name = "txtScheduleSeconds";
+            this.txtScheduleSeconds.Size = new System.Drawing.Size(48, 20);
+            this.txtScheduleSeconds.TabIndex = 4;
+            this.txtScheduleSeconds.Validating += new System.ComponentModel.CancelEventHandler(this.txtScheduleSeconds_Validating);
+            // 
+            // txtScheduleMinutes
+            // 
+            this.txtScheduleMinutes.Location = new System.Drawing.Point(137, 51);
+            this.txtScheduleMinutes.Name = "txtScheduleMinutes";
+            this.txtScheduleMinutes.Size = new System.Drawing.Size(48, 20);
+            this.txtScheduleMinutes.TabIndex = 3;
+            this.txtScheduleMinutes.Validating += new System.ComponentModel.CancelEventHandler(this.txtScheduleMinutes_Validating);
+            // 
+            // txtScheduleHours
+            // 
+            this.txtScheduleHours.Location = new System.Drawing.Point(77, 51);
+            this.txtScheduleHours.Name = "txtScheduleHours";
+            this.txtScheduleHours.Size = new System.Drawing.Size(48, 20);
+            this.txtScheduleHours.TabIndex = 2;
+            this.txtScheduleHours.Validating += new System.ComponentModel.CancelEventHandler(this.txtScheduleHours_Validating);
             // 
             // label5
             // 
@@ -457,72 +566,11 @@
             this.ddlScheduleDay.Size = new System.Drawing.Size(121, 21);
             this.ddlScheduleDay.TabIndex = 0;
             // 
-            // txtScheduleHours
-            // 
-            this.txtScheduleHours.Location = new System.Drawing.Point(77, 51);
-            this.txtScheduleHours.Name = "txtScheduleHours";
-            this.txtScheduleHours.Size = new System.Drawing.Size(48, 20);
-            this.txtScheduleHours.TabIndex = 2;
-            // 
-            // txtScheduleMinutes
-            // 
-            this.txtScheduleMinutes.Location = new System.Drawing.Point(137, 51);
-            this.txtScheduleMinutes.Name = "txtScheduleMinutes";
-            this.txtScheduleMinutes.Size = new System.Drawing.Size(48, 20);
-            this.txtScheduleMinutes.TabIndex = 3;
-            // 
-            // txtScheduleSeconds
-            // 
-            this.txtScheduleSeconds.Location = new System.Drawing.Point(199, 51);
-            this.txtScheduleSeconds.Name = "txtScheduleSeconds";
-            this.txtScheduleSeconds.Size = new System.Drawing.Size(48, 20);
-            this.txtScheduleSeconds.TabIndex = 4;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(14, 54);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(30, 13);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "Time";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
-            // 
-            // btnSchedule
-            // 
-            this.btnSchedule.Location = new System.Drawing.Point(77, 151);
-            this.btnSchedule.Name = "btnSchedule";
-            this.btnSchedule.Size = new System.Drawing.Size(75, 23);
-            this.btnSchedule.TabIndex = 6;
-            this.btnSchedule.Text = "Schedule";
-            this.btnSchedule.UseVisualStyleBackColor = true;
-            this.btnSchedule.Click += new System.EventHandler(this.btnSchedule_Click);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(14, 89);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(41, 13);
-            this.label7.TabIndex = 8;
-            this.label7.Text = "Device";
-            // 
-            // ddlScheduleDevice
-            // 
-            this.ddlScheduleDevice.FormattingEnabled = true;
-            this.ddlScheduleDevice.Items.AddRange(new object[] {
-            "Monday,1",
-            "Tuesday,2"});
-            this.ddlScheduleDevice.Location = new System.Drawing.Point(77, 86);
-            this.ddlScheduleDevice.Name = "ddlScheduleDevice";
-            this.ddlScheduleDevice.Size = new System.Drawing.Size(121, 21);
-            this.ddlScheduleDevice.TabIndex = 7;
-            // 
             // LutronLightFloor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(439, 655);
+            this.ClientSize = new System.Drawing.Size(439, 727);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
@@ -596,5 +644,9 @@
         private System.Windows.Forms.Button btnSchedule;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox ddlScheduleDevice;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox ddlScheduleObject;
+        private System.Windows.Forms.TextBox txtScheduleValue;
+        private System.Windows.Forms.Label label9;
     }
 }

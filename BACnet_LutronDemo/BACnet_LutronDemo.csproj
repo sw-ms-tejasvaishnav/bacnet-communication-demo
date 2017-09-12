@@ -103,6 +103,7 @@
       <DependentUpon>LutronLightFloor.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\BACnetDevice.cs" />
+    <Compile Include="Model\BACnetScheduleObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="LutronLight.resx">

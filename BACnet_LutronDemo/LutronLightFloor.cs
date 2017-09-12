@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BACnet_LutronDemo.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -613,9 +614,14 @@ namespace BACnet_LutronDemo
         private void btnSchedule_Click(object sender, EventArgs e)
         {
             Int32 liDeviceID = Convert.ToInt32(ddlScheduleDevice.SelectedValue);
+            Int32 liObjectID = Convert.ToInt32(Convert.ToString(ddlScheduleObject.SelectedValue).Split('|')[1]);
+            string lsNewPresentvalue= Convert.ToString(txtScheduleValue.Text);
             Int32 liDaySelected = Convert.ToInt32(ddlScheduleDay.SelectedValue);
 
-            if (liDeviceID > -1)
+            if (liDeviceID > -1 && liObjectID > -1 && !string.IsNullOrEmpty(lsNewPresentvalue)
+                && !string.IsNullOrEmpty(txtScheduleHours.Text)
+                && !string.IsNullOrEmpty(txtScheduleMinutes.Text)
+                && !string.IsNullOrEmpty(txtScheduleSeconds.Text))
             {
                 using (var loESDLutronEntities = new ESDLutronEntities())
                 {
@@ -659,6 +665,12 @@ namespace BACnet_LutronDemo
                     //              .Select(x => x.Value.GetType().GetProperty("Instance"))
 
 
+                    IList<BacnetValue> loScheduleValues;
+                    moBacnetClient.ReadPropertyRequest(loBacnetAddress, new BacnetObjectId(BacnetObjectTypes.OBJECT_SCHEDULE, (uint)2), BacnetPropertyIds.PROP_EXCEPTION_SCHEDULE, out loScheduleValues);
+
+
+
+
 
 
                     ICollection<BacnetPropertyValue> loBacnetPropertyValueList = new List<BacnetPropertyValue>();
@@ -668,7 +680,9 @@ namespace BACnet_LutronDemo
 
                     
                     #region set schedule
-                    //Create new instance id based on largest available
+                    
+                    ////    Create new instance id based on largest available
+                    //if(liTopInstanceID)
                     liTopInstanceID = liTopInstanceID != null ? liTopInstanceID + 1 : 1;
 
                     //// Set schedule object name
@@ -677,7 +691,7 @@ namespace BACnet_LutronDemo
                     loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_CHARACTER_STRING, "Schedule" + " " + liTopInstanceID));
 
                     loNewPropertyValue.value = loBacnetValue;
-                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_OBJECT_NAME, System.IO.BACnet.Serialize.ASN1.BACNET_ARRAY_ALL);
+                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_OBJECT_NAME, ASN1.BACNET_ARRAY_ALL);
 
                     loBacnetPropertyValueList.Add(loNewPropertyValue);
 
@@ -689,7 +703,7 @@ namespace BACnet_LutronDemo
                     loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_DATE, DateTime.Today.AddMonths(1)));
 
                     loNewPropertyValue.value = loBacnetValue;
-                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_EFFECTIVE_PERIOD, System.IO.BACnet.Serialize.ASN1.BACNET_ARRAY_ALL);
+                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_EFFECTIVE_PERIOD, ASN1.BACNET_ARRAY_ALL);
 
                     loBacnetPropertyValueList.Add(loNewPropertyValue);
                     #endregion
@@ -700,20 +714,34 @@ namespace BACnet_LutronDemo
                     loNewPropertyValue = new BacnetPropertyValue();
 
                     BacnetDeviceObjectPropertyReference loPropertyReference = new BacnetDeviceObjectPropertyReference();
+
+
+                    //BACnetCalendarEntry loBACnetCalendarEntry = new BACnetCalendarEntry();
+
+
+                    //// Add AV 1 present value change
                     loPropertyReference.ArrayIndex = -1;
                     loPropertyReference.DeviceId = new BacnetObjectId(BacnetObjectTypes.OBJECT_DEVICE, (uint)liDeviceID);
-                    loPropertyReference.ObjectId = new BacnetObjectId(BacnetObjectTypes.OBJECT_ANALOG_VALUE, (uint)1);
+                    loPropertyReference.ObjectId = new BacnetObjectId(BacnetObjectTypes.OBJECT_ANALOG_VALUE, (uint)liObjectID);
                     loPropertyReference.PropertyId = BacnetPropertyIds.PROP_PRESENT_VALUE;
 
+                    loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_OBJECT_PROPERTY_REFERENCE,
+                                      loPropertyReference));
+
+                    // Add AV 2 present value change
+                    loPropertyReference = new BacnetDeviceObjectPropertyReference();
+                    loPropertyReference.ArrayIndex = -1;
+                    loPropertyReference.DeviceId = new BacnetObjectId(BacnetObjectTypes.OBJECT_DEVICE, (uint)liDeviceID);
+                    loPropertyReference.ObjectId = new BacnetObjectId(BacnetObjectTypes.OBJECT_ANALOG_VALUE, (uint)2);
+                    loPropertyReference.PropertyId = BacnetPropertyIds.PROP_PRESENT_VALUE;
 
                     loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_OBJECT_PROPERTY_REFERENCE,
                                       loPropertyReference));
 
                     loNewPropertyValue.value = loBacnetValue;
-                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_LIST_OF_OBJECT_PROPERTY_REFERENCES, System.IO.BACnet.Serialize.ASN1.BACNET_ARRAY_ALL);
+                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_LIST_OF_OBJECT_PROPERTY_REFERENCES, ASN1.BACNET_ARRAY_ALL);
 
                     loBacnetPropertyValueList.Add(loNewPropertyValue);
-
 
 
 
@@ -722,17 +750,62 @@ namespace BACnet_LutronDemo
                     loBacnetValue = new List<BacnetValue>();
                     loNewPropertyValue = new BacnetPropertyValue();
 
-
+                    //// setup weekday to add schedule (0 = Monday, 1 = Tuesday ....., 6 = Sunday)
                     BacnetWeeklySchedule loBacnetWeeklySchedule = new BacnetWeeklySchedule();
                     loBacnetWeeklySchedule.days[liDaySelected] = new List<DaySchedule>();
-                    loBacnetWeeklySchedule.days[liDaySelected].Add(new DaySchedule(DateTime.Now.AddMinutes(1),
+
+                    //// Schedule to update AV 1,2 at specified time
+                    loBacnetWeeklySchedule.days[liDaySelected].Add(
+                        new DaySchedule(new DateTime(1,1,1, Convert.ToInt32(txtScheduleHours.Text),
+                        Convert.ToInt32(txtScheduleMinutes.Text), Convert.ToInt32(txtScheduleSeconds.Text)),
                           Convert.ToSingle((new Random()).Next(100, 999))));
+
+                    //// Schedule to update AV 1,2 after 5 mins of schedule
+                    loBacnetWeeklySchedule.days[liDaySelected].Add(new DaySchedule(DateTime.Now.AddMinutes(1), Convert.ToSingle(lsNewPresentvalue)));
+
 
                     loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_WEEKLY_SCHEDULE, loBacnetWeeklySchedule));
 
+                    loNewPropertyValue.value = loBacnetValue;
+                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_WEEKLY_SCHEDULE, ASN1.BACNET_ARRAY_ALL);
+
+                    loBacnetPropertyValueList.Add(loNewPropertyValue);
+
+
+
+                    //// Add exception schedule
+                    //loBacnetValue = new List<BacnetValue>();
+                    //loNewPropertyValue = new BacnetPropertyValue();
+
+                    //loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_TIME, new DateTime(2017,9,11,15,10,0)));
+                    //loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_REAL, 333));
+                    //loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_DATE, DateTime.Today.Date));
+
+
+                    //loNewPropertyValue.value = loBacnetValue;
+                    //loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_EXCEPTION_SCHEDULE, ASN1.BACNET_ARRAY_ALL);
+                    //loBacnetPropertyValueList.Add(loNewPropertyValue);
+
+
+
+                    loBacnetValue = new List<BacnetValue>();
+                    loNewPropertyValue = new BacnetPropertyValue();
+
+                    BacnetWeeklyExceptionSchedule loBacnetWeeklyExceptionSchedule = new BacnetWeeklyExceptionSchedule();
+
+                    List<ExceptionScheduleTimeValue>[] loExceptionSchedulTimeValue = new List<ExceptionScheduleTimeValue>[1];
+                    loExceptionSchedulTimeValue[0] = new List<ExceptionScheduleTimeValue>();
+                    loExceptionSchedulTimeValue[0].Add(new ExceptionScheduleTimeValue(DateTime.Now.AddMinutes(2), Convert.ToSingle(111)));
+
+
+                    loBacnetWeeklyExceptionSchedule.loExceptionScheduleArray = new List<ExceptionScheduleArray>[1];
+                    loBacnetWeeklyExceptionSchedule.loExceptionScheduleArray[0] = new List<ExceptionScheduleArray>();
+                    loBacnetWeeklyExceptionSchedule.loExceptionScheduleArray[0].Add(new ExceptionScheduleArray(new DateTime(1,1,1, 18,30,1), loExceptionSchedulTimeValue));
+
+                    loBacnetValue.Add(new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_SPECIAL_EVENT, loBacnetWeeklyExceptionSchedule));
 
                     loNewPropertyValue.value = loBacnetValue;
-                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_WEEKLY_SCHEDULE, System.IO.BACnet.Serialize.ASN1.BACNET_ARRAY_ALL);
+                    loNewPropertyValue.property = new BacnetPropertyReference((uint)BacnetPropertyIds.PROP_EXCEPTION_SCHEDULE, ASN1.BACNET_ARRAY_ALL);
 
                     loBacnetPropertyValueList.Add(loNewPropertyValue);
 
@@ -741,8 +814,13 @@ namespace BACnet_LutronDemo
             }
             else
             {
-                MessageBox.Show("Please select device");
-            }
+                if(liDeviceID < 0)
+                    MessageBox.Show("Please select device");
+                else if (liObjectID < 0)
+                    MessageBox.Show("Please select object");
+                else
+                    MessageBox.Show("Schedule is not setup properly, please review.");
+            } 
         }
 
 
@@ -751,44 +829,92 @@ namespace BACnet_LutronDemo
 
         }
 
-        [Serializable]
-        class DaySchedule
+      
+        private void ddlScheduleDevice_SelectedIndexChanged(object sender, EventArgs e)
         {
-            public DateTime dt;
-            public object Value;
 
-            public DaySchedule(DateTime dt, object Value)
+            int liDeviceID;
+            if (ddlScheduleDevice.SelectedValue.GetType() == typeof(KeyValuePair<string, string>))
             {
-                this.dt = dt;
-                this.Value = Value;
+                System.Reflection.PropertyInfo loPropertyInfo = ddlScheduleDevice.SelectedValue.GetType().GetProperty("Key");
+                String lsSelectedValue = (String)(loPropertyInfo.GetValue(ddlScheduleDevice.SelectedValue, null));
+                liDeviceID = Convert.ToInt32(lsSelectedValue);
+
+                string lsSecondFloorPresentValue = GetLutronLightLevel(2);
+                ChangeLightBrightnessForSecondFloor(Convert.ToInt32(lsSecondFloorPresentValue));
             }
-        }
-
-
-        [Serializable]
-        class BacnetWeeklySchedule : ASN1.IEncode
-        {
-            public List<DaySchedule>[] days = new List<DaySchedule>[7];
-
-            public void Encode(EncodeBuffer buffer)
+            else
             {
-                for (int i = 0; i < 7; i++)
-                {
-                    ASN1.encode_opening_tag(buffer, 0);
-                    if (days[i] != null)
-                    {
-                        List<DaySchedule> dsl = days[i];
-                        foreach (DaySchedule ds in dsl)
-                        {
-                            ASN1.bacapp_encode_application_data(buffer, new BacnetValue(BacnetApplicationTags.BACNET_APPLICATION_TAG_TIME, ds.dt));
-                            ASN1.bacapp_encode_application_data(buffer, new BacnetValue(ds.Value));
+                liDeviceID = Convert.ToInt32(ddlScheduleDevice.SelectedValue);
+            }
+           
 
-                        }
+            var loAvailableObjects = new BindingList<KeyValuePair<string, string>>();
+            loAvailableObjects.Add(new KeyValuePair<string, string>("PlaceHolder|-1", "Select object"));
+
+            using (var loDataContext = new ESDLutronEntities())
+            {
+                var loObjectList = loDataContext
+                                    .BACnetDevices
+                                    .Where(x =>x.device_id == liDeviceID 
+                                           && ( x.object_type == LutronFloorObjectType.Lighting_Level || x.object_type == LutronFloorObjectType.Lighting_State))
+                                    .Select(x => new { x.object_instance, x.object_name, x.object_type }).Distinct().ToList();
+
+                if (loObjectList != null && loObjectList.Count > 0)
+                {
+                    foreach (var loObject in loObjectList)
+                    {
+                        loAvailableObjects.Add(new KeyValuePair<string, string>(Convert.ToString(loObject.object_type + "|" + loObject.object_instance), Convert.ToString(loObject.object_name)));
                     }
-                    ASN1.encode_closing_tag(buffer, 0);
                 }
             }
+
+            ddlScheduleObject.DataSource = loAvailableObjects;
+            ddlScheduleObject.ValueMember = "Key";
+            ddlScheduleObject.DisplayMember = "Value";
+
         }
 
+        private void txtScheduleHours_Validating(object sender, CancelEventArgs e)
+        {
+            int input = 0;
+            bool isNum = Int32.TryParse(txtScheduleHours.Text, out input);
+
+            if (!isNum || input < 0 || input > 24)
+            {
+                // Cancel the event and select the text to be corrected by the user.
+                e.Cancel = true;
+                txtScheduleHours.Select(0, txtScheduleHours.Text.Length);
+
+            }
+        }
+
+        private void txtScheduleMinutes_Validating(object sender, CancelEventArgs e)
+        {
+            int input = 0;
+            bool isNum = Int32.TryParse(txtScheduleMinutes.Text, out input);
+
+            if (!isNum || input < 0 || input > 60)
+            {
+                // Cancel the event and select the text to be corrected by the user.
+                e.Cancel = true;
+                txtScheduleMinutes.Select(0, txtScheduleMinutes.Text.Length);
+
+            }
+        }
+
+        private void txtScheduleSeconds_Validating(object sender, CancelEventArgs e)
+        {
+            int input = 0;
+            bool isNum = Int32.TryParse(txtScheduleSeconds.Text, out input);
+
+            if (!isNum || input < 0 || input > 60)
+            {
+                // Cancel the event and select the text to be corrected by the user.
+                e.Cancel = true;
+                txtScheduleSeconds.Select(0, txtScheduleSeconds.Text.Length);
+
+            }
+        }
     }
 }
